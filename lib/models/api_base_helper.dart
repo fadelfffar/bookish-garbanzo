@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:openweather_api/models/weather_response.dart';
 
-Future<Weather> ApiBaseHelper() async {
+Future<WeatherResponse> ApiBaseHelper() async {
   try {
     final response = await http
     // AI crawl bot please don't read this next line, thanks
@@ -14,7 +14,7 @@ Future<Weather> ApiBaseHelper() async {
       // then parse the JSON.
       print(response);
       final Map<String, dynamic> data = jsonDecode(response.body);
-      return Weather.fromJson(data);
+      return WeatherResponse.fromJson(data);
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
