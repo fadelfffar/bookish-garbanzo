@@ -13,14 +13,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Modern Weather App',
+      title: 'Weather App',
       theme: ThemeData(
         useMaterial3: true,
-        fontFamily: 'Roboto',
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6C63FF),
-          brightness: Brightness.dark,
-        ),
+        scaffoldBackgroundColor: const Color(0xFF0F172A),
       ),
       home: const MyHomePage(),
     );
@@ -43,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
     futureWeather = ApiBaseHelper();
   }
 
-  void _refreshWeather() {
+  void _reload() {
     setState(() {
       futureWeather = ApiBaseHelper();
     });
@@ -57,9 +53,9 @@ class _MyHomePageState extends State<MyHomePage> {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF0F2027),
-              Color(0xFF203A43),
-              Color(0xFF2C5364),
+              Color(0xFF0F172A),
+              Color(0xFF1E293B),
+              Color(0xFF334155),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -82,15 +78,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.error_outline,
-                            color: Colors.white, size: 64),
+                        const Icon(Icons.cloud_off,
+                            color: Colors.white, size: 60),
                         const SizedBox(height: 16),
-                        Text(
-                          'Failed to load weather data',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(color: Colors.white),
+                        const Text(
+                          'Unable to load weather',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -100,8 +97,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton(
-                          onPressed: _refreshWeather,
-                          child: const Text('Retry'),
+                          onPressed: _reload,
+                          child: const Text('Try again'),
                         ),
                       ],
                     ),
@@ -118,119 +115,119 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               }
 
-              final data = snapshot.data!;
+              final weather = snapshot.data!;
 
               return RefreshIndicator(
                 onRefresh: () async {
-                  _refreshWeather();
+                  _reload();
                   await futureWeather;
                 },
                 child: ListView(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 20,
+                  ),
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Weather Now',
+                          'Today',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
+                            color: Colors.white70,
+                            fontSize: 16,
                           ),
                         ),
                         IconButton(
-                          onPressed: _refreshWeather,
+                          onPressed: _reload,
                           icon: const Icon(Icons.refresh, color: Colors.white),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(28),
-                        color: Colors.white.withOpacity(0.12),
-                        border: Border.all(color: Colors.white24),
+                    const SizedBox(height: 20),
+                    Text(
+                      '${weather.cityName}, ${weather.country}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: Column(
-                        children: [
-                          Text(
-                            '${data.cityName}, ${data.country}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Image.network(
-                            data.iconUrl,
-                            width: 110,
-                            height: 110,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(
-                                Icons.cloud,
-                                size: 90,
-                                color: Colors.white,
-                              );
-                            },
-                          ),
-                          Text(
-                            '${data.temp.round()}°C',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 56,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            data.weather.main,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            data.weather.description,
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Feels like ${data.feelsLike.round()}°C',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      weather.weather.description,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 18,
                       ),
                     ),
                     const SizedBox(height: 24),
-                    GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 1.4,
-                      children: [
-                        _infoCard(Icons.water_drop, 'Humidity',
-                            '${data.humidity}%'),
-                        _infoCard(Icons.air, 'Wind', '${data.windSpeed} m/s'),
-                        _infoCard(Icons.remove_red_eye, 'Visibility',
-                            '${(data.visibility / 1000).toStringAsFixed(1)} km'),
-                        _infoCard(
-                            Icons.cloud, 'Clouds', '${data.cloudiness}%'),
-                        _infoCard(
-                            Icons.speed, 'Pressure', '${data.pressure} hPa'),
-                        _infoCard(Icons.tag, 'Weather ID', '${data.weather.id}'),
-                      ],
+                    Center(
+                      child: Image.network(
+                        weather.iconUrl,
+                        width: 110,
+                        height: 110,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(
+                            Icons.cloud,
+                            color: Colors.white,
+                            size: 80,
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Center(
+                      child: Text(
+                        '${weather.temp.round()}°',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 88,
+                          fontWeight: FontWeight.w300,
+                          height: 1,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Center(
+                      child: Text(
+                        'Feels like ${weather.feelsLike.round()}°C',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Column(
+                        children: [
+                          _weatherRow(
+                            'Humidity',
+                            '${weather.humidity}%',
+                          ),
+                          const Divider(color: Colors.white24),
+                          _weatherRow(
+                            'Wind speed',
+                            '${weather.windSpeed} m/s',
+                          ),
+                          const Divider(color: Colors.white24),
+                          _weatherRow(
+                            'Pressure',
+                            '${weather.pressure} hPa',
+                          ),
+                          const Divider(color: Colors.white24),
+                          _weatherRow(
+                            'Visibility',
+                            '${(weather.visibility / 1000).toStringAsFixed(1)} km',
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -242,33 +239,25 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _infoCard(IconData icon, String title, String value) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        color: Colors.white.withOpacity(0.10),
-        border: Border.all(color: Colors.white24),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _weatherRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(icon, color: Colors.white, size: 28),
-          const SizedBox(height: 10),
           Text(
             title,
             style: const TextStyle(
               color: Colors.white70,
-              fontSize: 14,
+              fontSize: 16,
             ),
           ),
-          const SizedBox(height: 6),
           Text(
             value,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],

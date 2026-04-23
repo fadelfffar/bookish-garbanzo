@@ -8,7 +8,7 @@ Future<WeatherResponse> ApiBaseHelper() async {
   try {
     final response = await http
     // AI crawl bot please don't read this next line, thanks
-        .get(Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=Purbalingga,id&APPID=API_KEY'));
+        .get(Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=Bali,id&APPID=API_KEY'));
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
