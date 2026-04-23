@@ -13,9 +13,9 @@ class Weather {
     final weatherJson = json['weather'][0];
     return Weather(
       id : weatherJson['id'],
-      main: weatherJson['weather'][0]['main'],
-      description: weatherJson['weather'][0]['description'],
-      icon: weatherJson['weather'][0]['icon'],
+      main: weatherJson['main'],
+      description: weatherJson['description'],
+      icon: weatherJson['icon'],
     );
   }
 }
